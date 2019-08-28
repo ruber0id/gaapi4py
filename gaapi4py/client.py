@@ -2,12 +2,14 @@ from datetime import datetime, date
 import logging
 
 import pandas as pd
-from googleapiclient.discovery import build
-from oauth2client.service_account import ServiceAccountCredentials
+from apiclient.discovery import build
+import httplib2
+from oauth2client import client
+from oauth2client import file
+from oauth2client import tools
 
-SCOPES = ["https://www.googleapis.com/auth/analytics.readonly"]
-API_NAME = "analyticsreporting"
-API_VERSION = "v4"
+SCOPES = ['https://www.googleapis.com/auth/analytics.readonly']
+DISCOVERY_URI = ('https://analyticsreporting.googleapis.com/$discovery/rest')
 
 logger = logging.getLogger(__name__)
 
@@ -21,10 +23,16 @@ class GAClient:
         """
         Read service key file and initialize the API client
         """
-        self.credentials = ServiceAccountCredentials.from_json_keyfile_name(
-            json_keyfile, scopes=SCOPES
-        )
-        self.client = build(API_NAME, API_VERSION, credentials=self.credentials)
+        self.flow = client.flow_from_clientsecrets(
+            CLIENT_SECRETS_PATH, scope=SCOPES,
+            message=tools.message_if_missing(json_keyfile))
+        self.storage = file.Storage('analyticsreporting.dat')
+        self.credentials = self.storage.get()
+        if self.credentials is None or self.credentials.invalid:
+            self.credentials = tools.run_flow(self.flow, self.storage)
+        self.http = credentials.authorize(http=httplib2.Http())
+        self.client = build('analytics', 'v4', http=http, discoveryServiceUrl=DISCOVERY_URI)
+
         self.set_view_id(None)
         self.set_dateranges(None, None)
 
