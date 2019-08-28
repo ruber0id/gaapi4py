@@ -30,7 +30,7 @@ class GAClient:
         self.credentials = self.storage.get()
         if self.credentials is None or self.credentials.invalid:
             self.credentials = tools.run_flow(self.flow, self.storage)
-        self.http = credentials.authorize(http=httplib2.Http())
+        self.http = self.credentials.authorize(http=httplib2.Http())
         self.client = build('analytics', 'v4', http=http, discoveryServiceUrl=DISCOVERY_URI)
 
         self.set_view_id(None)
