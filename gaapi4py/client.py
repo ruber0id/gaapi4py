@@ -24,7 +24,7 @@ class GAClient:
         Read service key file and initialize the API client
         """
         self.flow = client.flow_from_clientsecrets(
-            CLIENT_SECRETS_PATH, scope=SCOPES,
+            json_keyfile, scope=SCOPES,
             message=tools.message_if_missing(json_keyfile))
         self.storage = file.Storage('analyticsreporting.dat')
         self.credentials = self.storage.get()
