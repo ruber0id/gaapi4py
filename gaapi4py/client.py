@@ -1,5 +1,6 @@
 from datetime import datetime, date
 import logging
+import argparse
 
 import pandas as pd
 from apiclient.discovery import build
@@ -23,13 +24,17 @@ class GAClient:
         """
         Read service key file and initialize the API client
         """
+        self.parser = argparse.ArgumentParser(
+            formatter_class=argparse.RawDescriptionHelpFormatter,
+            parents=[tools.argparser])
+        self.flags = self.parser.parse_args([])
         self.flow = client.flow_from_clientsecrets(
             json_keyfile, scope=SCOPES,
             message=tools.message_if_missing(json_keyfile))
         self.storage = file.Storage(dat_keyfile)
         self.credentials = self.storage.get()
         if self.credentials is None or self.credentials.invalid:
-            self.credentials = tools.run_flow(self.flow, self.storage)
+            self.credentials = tools.run_flow(self.flow, self.storage, self.flags)
         self.http = self.credentials.authorize(http=httplib2.Http())
         self.client = build('analytics', 'v4', http=self.http, discoveryServiceUrl=DISCOVERY_URI)
 
