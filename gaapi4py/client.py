@@ -8,7 +8,7 @@ from oauth2client import client
 from oauth2client import file
 from oauth2client import tools
 
-SCOPES = ['https://www.googleapis.com/auth/analytics.readonly']
+SCOPES = ['https://www.googleapis.com/auth/analytics.edit']
 DISCOVERY_URI = ('https://analyticsreporting.googleapis.com/$discovery/rest')
 
 logger = logging.getLogger(__name__)
