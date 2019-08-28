@@ -19,14 +19,14 @@ class GAClient:
     Client Instance.
     """
 
-    def __init__(self, json_keyfile):
+    def __init__(self, json_keyfile, dat_keyfile):
         """
         Read service key file and initialize the API client
         """
         self.flow = client.flow_from_clientsecrets(
             json_keyfile, scope=SCOPES,
             message=tools.message_if_missing(json_keyfile))
-        self.storage = file.Storage('analyticsreporting.dat')
+        self.storage = file.Storage(dat_keyfile)
         self.credentials = self.storage.get()
         if self.credentials is None or self.credentials.invalid:
             self.credentials = tools.run_flow(self.flow, self.storage)
